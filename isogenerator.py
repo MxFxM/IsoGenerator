@@ -1,13 +1,22 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 
 #
 # SETTINGS AND OPTIONS
 #
 INPUT_FILENAME = "testfile"
+X_MIN = 0
+X_MAX = 250
+X_COUNT = 10
+
 OPTION_PRINT_DATA_INPUT = False
 OPTION_PLOT_INPUT_DIAGRAM = False
 OPTION_PLOT_3D_INPUT_DIAGRAM = True
+
+
+
+
 
 #
 # CODE
@@ -43,3 +52,32 @@ if OPTION_PLOT_3D_INPUT_DIAGRAM:
     ax.set_ylabel("Y-Axis")
     ax.set_zlabel("Height")
     plt.show()
+
+# store the lines in a list
+lines = []
+lines.append([input_data["black_x"], input_data["black_y"], input_data["black_z"]])
+lines.append([input_data["blue_x"], input_data["blue_y"], input_data["blue_z"]])
+lines.append([input_data["grey_x"], input_data["grey_y"], input_data["grey_z"]])
+lines.append([input_data["red_x"], input_data["red_y"], input_data["red_z"]])
+lines.append([input_data["green_x"], input_data["green_y"], input_data["green_z"]])
+lines.append([input_data["pink_x"], input_data["pink_y"], input_data["pink_z"]])
+lines = np.array(lines)
+print(lines)
+
+# create the slices in x-direction as plains in y-h direction
+for x in range(X_MIN, X_MAX, (X_MAX-X_MIN)//X_COUNT):
+    print(f"x={x}")
+    # note: for a constant x, now draw the graph in y-h directions
+    # note: linearize the data between line points
+    # note: show the crossing of the linearized line between two points and this plane
+
+    # 1. get the line between every point in a line
+    for n in range(len(lines[0][0])):
+        pass
+        # 2. is the line (between the points) crossing with the plane
+        # 3. if so, store the point in a list of points
+    # 4. order the list using the y-coordinate
+    # 5. connect the ordered points
+    # 6. plot the new line
+    plt.plot()
+plt.show()
