@@ -2,17 +2,23 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
+import raytracing
+
 #
 # SETTINGS AND OPTIONS
 #
 INPUT_FILENAME = "testfile"
 X_MIN = 0
-X_MAX = 250
+X_MAX = 450
 X_COUNT = 10
+Y_MIN = 0
+Y_MAX = 450
+Y_COUNT = 10
 
 OPTION_PRINT_DATA_INPUT = False
 OPTION_PLOT_INPUT_DIAGRAM = False
 OPTION_PLOT_3D_INPUT_DIAGRAM = True
+OPTION_PLOT_3D_INTERSECTIONS = True # warning, this will take a long time
 
 
 
@@ -65,19 +71,39 @@ lines = np.array(lines)
 print(lines)
 
 # create the slices in x-direction as plains in y-h direction
-for x in range(X_MIN, X_MAX, (X_MAX-X_MIN)//X_COUNT):
-    print(f"x={x}")
-    # note: for a constant x, now draw the graph in y-h directions
-    # note: linearize the data between line points
-    # note: show the crossing of the linearized line between two points and this plane
-
+if OPTION_PLOT_3D_INTERSECTIONS:
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+for x in range(X_MIN, X_MAX):
+    intersection_y = []
+    intersection_h = []
     # 1. get the line between every point in a line
-    for n in range(len(lines[0][0])):
-        pass
-        # 2. is the line (between the points) crossing with the plane
-        # 3. if so, store the point in a list of points
+    for line in lines:
+        for n in range(len(line[0])-1):
+            # the line segment
+            Ia = raytracing.point(line[0][n], line[1][n], line[2][n])
+            Ib = raytracing.point(line[0][n+1], line[1][n+1], line[2][n+1])
+            # the plane
+            P0 = raytracing.point(x, 0, 0)
+            P1 = raytracing.point(x, 1, 0)
+            P2 = raytracing.point(x, 0, 1)
+            # 2. is the line (between the points) crossing with the plane
+            (intersection, point) = raytracing.intersection_between_line_and_plane(Ia, Ib, P0, P1, P2)
+            if intersection:
+                # 3. if so, store the point in a list of points
+                intersection_y.append(point[1])
+                intersection_h.append(point[2])
     # 4. order the list using the y-coordinate
+    sorted_y = np.array([y for y,_ in sorted(zip(intersection_y,intersection_h))])
+    sorted_h = np.array([h for _,h in sorted(zip(intersection_y,intersection_h))])
     # 5. connect the ordered points
     # 6. plot the new line
-    plt.plot()
-plt.show()
+    if OPTION_PLOT_3D_INTERSECTIONS:
+        #ax.scatter([x for _ in range(len(sorted_y))], 150-sorted_y, sorted_h, color="black", marker='o')
+        ax.plot([x for _ in range(len(sorted_y))], 150-sorted_y, sorted_h, color="black", marker='o')
+
+if OPTION_PLOT_3D_INTERSECTIONS:
+    ax.set_xlabel("X-Axis")
+    ax.set_ylabel("Y-Axis")
+    ax.set_zlabel("Height")
+    plt.show()
